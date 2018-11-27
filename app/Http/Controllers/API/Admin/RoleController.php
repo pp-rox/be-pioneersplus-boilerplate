@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\API\Admin;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use App\Http\Requests\RoleRequest;
+use Illuminate\Http\Request;
 
 //Importing spatie laravel role model
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
-class RoleController extends Controller
+class RoleController extends ApiController
 {
-    
+
+    public function index()
+    {
+        return $this->output(true, Role::all());
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -24,16 +27,14 @@ class RoleController extends Controller
     {
         $request->validated();
 
-        try{
+        try {
             $input = $request->only(['name']);
             $role = Role::create($input);
-            
-            return response()->json(['success' => $role], 200);
 
-        }catch(\Exception $e){
+            return $this->output(true, $role);
 
-            return response()->json(['error' => $e->getMessage()], 422);
-
+        } catch (\Exception $e) {
+            return $this->output(false, $e->getMessage());
         }
     }
 
@@ -49,18 +50,16 @@ class RoleController extends Controller
         $role = Role::findOrFail($id);
         $request->validated();
 
-        try{
-            
+        try {
+
             $input = $request->only(['name']);
 
             $role->fill($input)->save();
 
-            return response()->json(['success' => $role], 200);
+            return $this->output(true, $role);
 
-        }catch(\Exception $e){
-
-            return response()->json(['error' => $e->getMessage()], 422);
-
+        } catch (\Exception $e) {
+            return $this->output(false, $e->getMessage());
         }
 
     }
@@ -74,13 +73,13 @@ class RoleController extends Controller
     public function destroy($id)
     {
         $role = Role::findOrFail($id);
-        
-        try{
-            
-            return response()->json(['success' => 'deleted'], 200);
 
-        }catch(\Exception $e){
-            return response()->json(['error' => $e->getMessage()], 422); 
+
+        try {
+            $role->delete();
+            return $this->output(true, Role::all());
+        } catch (\Exception $e) {
+            return $this->output(false, $e->getMessage());
         }
     }
 }

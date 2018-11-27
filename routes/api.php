@@ -19,12 +19,15 @@ Route::namespace('API')->group(function () {
     Route::post('login', 'UserController@login');
     Route::post('register', 'UserController@register');
     Route::get('testing', 'UserController@testing');
-    Route::get('logout', 'UserController@logout');
+    
 
     Route::group(['middleware' => 'auth:api'], function(){
         Route::get('profile', 'UserController@profile');
+        Route::get('logout', 'UserController@logout');
 
-        Route::group(['middleware' => 'role:admin'], function(){
+        Route::group(['middleware' => ['auth:api', 'role:admin']], function(){
+            Route::resource('roles', 'Admin\RoleController');
+           // Route::post('roles', 'Admin\RoleController@store');
             Route::get('test-admin', 'UserController@admin');    
             Route::get('get-tree', 'General\Table1Controller@getTree');
         });

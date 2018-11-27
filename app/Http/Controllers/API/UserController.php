@@ -20,7 +20,7 @@ class UserController extends ApiController
             $user = Auth::user();
             $success['token'] = $user->createToken('token')->accessToken;
 
-            return response()->json(['success' => $success], 200);
+            return $this->output(true, $success);
 
         } else {
             return $this->output(false, 'Unauthorized');
@@ -45,7 +45,7 @@ class UserController extends ApiController
 
             }
 
-            $success['token'] = $user->createToken('token', $input['scopes'])->accessToken;
+            $success['token'] = $user->createToken('token')->accessToken;
 
             return $this->output(true, $success);
 
@@ -59,10 +59,9 @@ class UserController extends ApiController
     {
 
         try {
-
-            $user = Auth::user();
-            $success['data'] = $user;
-
+            $user = Auth::user();  
+            $user->getRoleNames();
+            
             return $this->output(true, $user);
 
         } catch (\Exception $e) {
@@ -86,7 +85,7 @@ class UserController extends ApiController
             $token_id = (new Parser())->parse($token)->getHeader('jti');
             $token = $request->user()->tokens->find($token_id);
             $token->revoke();
-            
+
             return $this->output(true, 'Logged out successfully');
 
         } catch (\Exception $e) {

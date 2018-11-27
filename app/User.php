@@ -34,6 +34,8 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $guard_name = 'api';
+
     public function setPasswordAttribute($password)
     {   
         $this->attributes['password'] = bcrypt($password);
