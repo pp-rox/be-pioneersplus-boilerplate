@@ -13,11 +13,21 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('login', 'API\UserController@login');
-Route::post('register', 'API\UserController@register');
-Route::get('testing', 'API\UserController@testing');
+// Controllers Within The "App\Http\Controllers\API" Namespace
+Route::namespace('API')->group(function () {
 
-Route::group(['middleware' => 'auth:api'], function(){
-    Route::get('profile', 'API\UserController@profile');
-    Route::get('logout', 'API\UserController@logout');
+    Route::post('login', 'UserController@login');
+    Route::post('register', 'UserController@register');
+    Route::get('testing', 'UserController@testing');
+    Route::get('logout', 'UserController@logout');
+
+    Route::group(['middleware' => 'auth:api'], function(){
+        Route::get('profile', 'UserController@profile');
+
+        Route::group(['middleware' => 'role:admin'], function(){
+            Route::get('test-admin', 'UserController@admin');    
+            Route::get('get-tree', 'General\Table1Controller@getTree');
+        });
+
+    });
 });

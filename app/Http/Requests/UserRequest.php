@@ -29,6 +29,7 @@ class UserRequest extends FormRequest
             'email' => 'required|string|email|unique:users',
             'username' => 'required|string|min:3|max:255|unique:users',
             'password' => 'required|string|min:6',
+            'roles' => 'required',
         ];
 
         return $rules;

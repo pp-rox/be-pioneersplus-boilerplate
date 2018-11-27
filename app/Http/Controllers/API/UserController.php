@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Lcobucci\jwt\Parser;
+use Spatie\Permission\Models\Role;
 
 class UserController extends ApiController
 {
@@ -22,9 +23,7 @@ class UserController extends ApiController
             return response()->json(['success' => $success], 200);
 
         } else {
-
-            return response()->json(['error' => 'Unauthorised'], 401);
-
+            return $this->output(false, 'Unauthorized');
         }
     }
 
@@ -35,18 +34,26 @@ class UserController extends ApiController
         $input = $request->all();
 
         try {
-            $user = User::create($input);
-            $success['token'] = $user->createToken('token')->accessToken;
-            $success['name'] = $user->name;
+            $roles = $request->only(['roles']);
 
-            return response()->json(['success' => $success], 200);
+            $user = User::create($input);
+
+            foreach ($roles as $user_role) {
+
+                $role = Role::where('id', '=', $user_role)->firstOrFail();
+                $user->assignRole($role);
+
+            }
+
+            $success['token'] = $user->createToken('token', $input['scopes'])->accessToken;
+
+            return $this->output(true, $success);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 422);
+            return $this->output(false, $e->getMessage());
         }
 
     }
-
 
     public function profile()
     {
@@ -54,19 +61,19 @@ class UserController extends ApiController
         try {
 
             $user = Auth::user();
-            return response()->json(['success' => $user], 200);
+            $success['data'] = $user;
+
+            return $this->output(true, $user);
 
         } catch (\Exception $e) {
-
-            return response()->json(['error' => $e->getMessage()], 422);
-
+            return $this->output(false, $e->getMessage());
         }
 
     }
 
     public function testing()
     {
-        return response()->json(['success' => 'testing'], 200);
+        return $this->output(false, 'testing');
 
     }
 
@@ -79,12 +86,12 @@ class UserController extends ApiController
             $token_id = (new Parser())->parse($token)->getHeader('jti');
             $token = $request->user()->tokens->find($token_id);
             $token->revoke();
-
-            return response()->json(['success' => 'Logged out successfully'], 200);
+            
+            return $this->output(true, 'Logged out successfully');
 
         } catch (\Exception $e) {
 
-            return response()->json(['error' => 'Failed to logout'], 422);
+            return $this->output(false, $e->getMessage());
         }
 
     }
