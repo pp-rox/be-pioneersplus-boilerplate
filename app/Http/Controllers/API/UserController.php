@@ -12,21 +12,64 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends ApiController
 {
-
+    /**
+     * @SWG\SecurityScheme(
+     *     securityDefinition="implicit",
+     *     token_type="Bearer"
+     *     type="oauth2",
+     *     flow="implicit",
+     *     in="header",
+     * )
+     */
     public function login()
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
 
-            $user = Auth::user();
-            $success['token'] = $user->createToken('token')->accessToken;
-
-            return $this->output(true, $success);
+            return $this->output(true, Auth::user());
 
         } else {
             return $this->output(false, 'Unauthorized');
         }
     }
 
+    public function getToken()
+    {
+        $user = Auth::user();
+        $token = $user->createToken('token')->accessToken;
+        return $this->output(true, Auth::user());
+    }
+
+    /**
+     * @SWG\Post(
+     *     path="/register",
+     *     summary="Register user",
+     *     tags={"user"},
+     *     @SWG\Parameter(
+     *          name="body",
+     *          in="body",
+     *          required=true,
+     *          @SWG\Schema(
+     *              title="User",
+     *              type="object",
+     *              @SWG\Property(property="first_name", type="string"),
+     *              @SWG\Property(property="last_name", type="string"),
+     *              @SWG\Property(property="username", type="string"),
+     *              @SWG\Property(property="email", type="string"),
+     *              @SWG\Property(property="role", type="integer"),
+     *          ),
+     *     ),
+     *     @SWG\Response(
+     *          response=200,
+     *          description="success",
+     *          @SWG\Schema(ref="#/definitions/User"),
+     *     ),
+     *     @SWG\Response(
+     *         response=422,
+     *         description="error details",
+     *     ),
+     *     security={{"Bearer":{}}}
+     * )
+     */
     public function register(UserRequest $request)
     {
         $request->validated();
@@ -55,27 +98,56 @@ class UserController extends ApiController
 
     }
 
+    /**
+     * @SWG\Get(
+     *     path="/profile",
+     *     tags={"user"},
+     *     summary="User's Profile",
+     *     @SWG\Response(
+     *          response=200,
+     *          description="success",
+     *          @SWG\Schema(ref="#/definitions/User"),
+     *     ),
+     *     @SWG\Response(
+     *          response=422,
+     *          description="error details",
+     *
+     *     ),
+     *     security={{"Bearer":{}}}
+     * )
+     */
     public function profile()
     {
 
         try {
-            $user = Auth::user();  
+            $user = Auth::user();
             $user->getRoleNames();
-            
+
             return $this->output(true, $user);
 
         } catch (\Exception $e) {
             return $this->output(false, $e->getMessage());
         }
-
     }
 
-    public function testing()
-    {
-        return $this->output(false, 'testing');
-
-    }
-
+    /**
+     * @SWG\Get(
+     *     path="/logout",
+     *     tags={"user"},
+     *     summary="Logout",
+     *      @SWG\Response(
+     *          response=200,
+     *          description="success",
+     *
+     *     ),
+     *     @SWG\Response(
+     *          response=422,
+     *          description="Unprocessable Entity",
+     *
+     *     ),
+     *     security={{"Bearer":{}}}
+     * )
+     */
     public function logout(Request $request)
     {
 

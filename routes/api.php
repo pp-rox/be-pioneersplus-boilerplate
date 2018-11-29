@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -11,24 +9,27 @@ use Illuminate\Http\Request;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
+
+
 
 // Controllers Within The "App\Http\Controllers\API" Namespace
-Route::namespace('API')->group(function () {
+Route::namespace ('API')->group(function () {
 
     Route::post('login', 'UserController@login');
     Route::post('register', 'UserController@register');
     Route::get('testing', 'UserController@testing');
-    
 
-    Route::group(['middleware' => 'auth:api'], function(){
+    Route::group(['middleware' => 'auth:api'], function () {
         Route::get('profile', 'UserController@profile');
         Route::get('logout', 'UserController@logout');
+        Route::get('request-token', 'UserController@logout');
 
-        Route::group(['middleware' => ['auth:api', 'role:admin']], function(){
+        Route::group(['middleware' => ['auth:api', 'scope:admin']], function () {
+
             Route::resource('roles', 'Admin\RoleController');
-           // Route::post('roles', 'Admin\RoleController@store');
-            Route::get('test-admin', 'UserController@admin');    
+            // Route::post('roles', 'Admin\RoleController@store');
+            Route::get('test-admin', 'UserController@admin');
             Route::get('get-tree', 'General\Table1Controller@getTree');
         });
 
