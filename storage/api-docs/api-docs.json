@@ -8,24 +8,94 @@
         "http"
     ],
     "paths": {
-        "/api/roles": {
-            "get": {
+        "/register": {
+            "post": {
                 "tags": [
-                    "roles"
+                    "user"
                 ],
-                "summary": "Get all roles",
-                "produces": [
-                    "application/json"
+                "summary": "Register user",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "title": "User",
+                            "properties": {
+                                "first_name": {
+                                    "type": "string"
+                                },
+                                "last_name": {
+                                    "type": "string"
+                                },
+                                "username": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "role": {
+                                    "type": "integer"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
-                        "description": "data",
+                        "description": "success",
                         "schema": {
-                            "$ref": "#/definitions/Role Response"
+                            "$ref": "#/definitions/User"
                         }
                     },
                     "422": {
                         "description": "error details"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/profile": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "User's Profile",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "422": {
+                        "description": "error details"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Logout",
+                "responses": {
+                    "200": {
+                        "description": "success"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
                     }
                 },
                 "security": [
@@ -117,103 +187,6 @@
                     },
                     "422": {
                         "description": "error details"
-                    }
-                },
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ]
-            }
-        },
-        "/register": {
-            "post": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Register user",
-                "parameters": [
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "title": "User",
-                            "properties": {
-                                "first_name": {
-                                    "type": "string"
-                                },
-                                "last_name": {
-                                    "type": "string"
-                                },
-                                "username": {
-                                    "type": "string"
-                                },
-                                "email": {
-                                    "type": "string"
-                                },
-                                "role": {
-                                    "type": "integer"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    },
-                    "422": {
-                        "description": "error details"
-                    }
-                },
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ]
-            }
-        },
-        "/profile": {
-            "get": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "User's Profile",
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
-                    },
-                    "422": {
-                        "description": "error details"
-                    }
-                },
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ]
-            }
-        },
-        "/logout": {
-            "get": {
-                "tags": [
-                    "user"
-                ],
-                "summary": "Logout",
-                "responses": {
-                    "200": {
-                        "description": "success"
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity"
                     }
                 },
                 "security": [
