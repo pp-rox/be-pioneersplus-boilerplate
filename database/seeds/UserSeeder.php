@@ -26,8 +26,10 @@ class UserSeeder extends Seeder
                 "username" => "superadmin",
                 "password" => "superadmin"
         ]);
-
+        
+        $user->createToken('token')->accessToken;    
         $user->assignRole('admin');
+
 
     }
 }

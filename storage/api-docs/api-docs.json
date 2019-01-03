@@ -60,7 +60,7 @@
                 ]
             }
         },
-        "/profile": {
+        "/api/profile": {
             "get": {
                 "tags": [
                     "user"
@@ -105,7 +105,34 @@
                 ]
             }
         },
-        "/roles/{id}": {
+        "/api/roles": {
+            "get": {
+                "tags": [
+                    "roles"
+                ],
+                "summary": "Get all roles",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data",
+                        "schema": {
+                            "$ref": "#/definitions/Role Response"
+                        }
+                    },
+                    "422": {
+                        "description": "error details"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/roles/{id}": {
             "put": {
                 "tags": [
                     "roles"
@@ -287,10 +314,11 @@
         }
     },
     "securityDefinitions": {
-        "implicit": {
+        "passport": {
             "type": "oauth2",
-            "in": "header",
-            "flow": "implicit"
+            "flow": "password",
+            "tokenUrl": "/oauth/token",
+            "scopes": {}
         }
     }
 }

@@ -9,29 +9,56 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Lcobucci\jwt\Parser;
 use Spatie\Permission\Models\Role;
+use Laravel\Passport\Passport;
+use Carbon\Carbon;
 
 class UserController extends ApiController
 {
-    
+
     public function login()
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
+            Passport::tokensExpireIn(Carbon::now()->addDays(30));
+            Passport::refreshTokensExpireIn(Carbon::now()->addDays(60));
 
-            return $this->response(true, Auth::user());
+            $user = Auth::user();
+            $user->token = $user->createToken('token')->accessToken;
+            // {
+            //     "access_token":"MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3",
+            //     "token_type":"bearer",
+            //     "expires_in":3600,
+            //     "refresh_token":"IwOGYzYTlmM2YxOTQ5MGE3YmNmMDFkNTVk",
+            //     "scope":"create"
+            //   }
+            //   $response['access_token'] = "invalid_request";
+            //   $response['token_type'] = "invalid_request";
+            //   $response['expires_in'] = "invalid_request";
+            //   $response['scope'] = "invalid_request";
 
+            return response()->json($user);
         } else {
-            return $this->response(false, 'Unauthorized');
+            $response['error'] = "invalid_request";
+            $response['error_description'] = "Unauthorized user";
         }
     }
 
     public function getToken()
     {
         $user = Auth::user();
+
+        if(!$user){
+            $response['error'] = "invalid_request";
+            $response['error_description'] = "Unauthorized user";
+            return response()->json($user);
+        }
         $token = $user->createToken('token')->accessToken;
-        return $this->response(true, Auth::user());
+        // $response['']
+
+        return response()->json($token);
+
+        // return $this->response(true, Auth::user());
     }
 
-    
     public function register(UserRequest $request)
     {
         $request->validated();
@@ -50,17 +77,16 @@ class UserController extends ApiController
 
             }
 
-            $success['token'] = $user->createToken('token')->accessToken;
+            $success['boilerplate'] = $user->createToken('boilerplate')->accessToken;
 
-            return $this->response(true, $success);
+            return $this->response(true, $success, null);
 
         } catch (\Exception $e) {
-            return $this->response(false, $e->getMessage());
+            return $this->response(false, null, $e->getMessage());
         }
 
     }
 
-    
     public function profile()
     {
 
@@ -74,7 +100,7 @@ class UserController extends ApiController
             return $this->response(false, $e->getMessage());
         }
     }
-    
+
     public function logout(Request $request)
     {
 
@@ -92,6 +118,11 @@ class UserController extends ApiController
             return $this->response(false, $e->getMessage());
         }
 
+    }
+
+    public function testing()
+    {
+        return 'testing';
     }
 
 }

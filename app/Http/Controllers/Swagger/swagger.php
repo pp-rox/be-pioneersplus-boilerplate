@@ -25,10 +25,11 @@
  * )
  * 
  * @SWG\SecurityScheme(
- *     securityDefinition="implicit",
+ *     securityDefinition="passport",
  *     type="oauth2",
- *     flow="implicit",
- *     in="header"
+ *     tokenUrl="/oauth/token",
+ *     flow="password",
+ *     scopes={}
  * )
  * 
  * @SWG\Post(
@@ -62,7 +63,7 @@
  * )
  *
  * @SWG\Get(
- *     path="/profile",
+ *     path="/api/profile",
  *     tags={"user"},
  *     summary="User's Profile",
  *     @SWG\Response(
@@ -95,8 +96,29 @@
  *     security={{"Bearer":{}}}
  * )
  * 
+ * *  @SWG\GET(
+ *     path="/api/roles",
+ *     tags={"roles"},
+ *     summary="Get all roles",
+ *     produces={"application/json"},
+ *   
+ *     @SWG\Response(
+ *          response=200,
+ *          description="data",
+ *          @SWG\Schema(ref="#/definitions/Role Response")
+
+ *     ),
+ *     @SWG\Response(
+ *          response=422,
+ *          description="error details",
+ *
+ *     ),
+ *     security={{"Bearer":{}}},
+ *)
+
+
  *  @SWG\Post(
- *     path="/roles/{id}",
+ *     path="/api/roles/{id}",
  *     tags={"roles"},
  *     summary="Create new role",
  *     produces={"application/json"},
@@ -121,7 +143,7 @@
  *)
 
  *  @SWG\PUT(
- *     path="/roles/{id}",
+ *     path="/api/roles/{id}",
  *     tags={"roles"},
  *     summary="Update a role",
  *     @SWG\Parameter(
@@ -144,7 +166,7 @@
  * )
  *
  *  @SWG\DELETE(
- *     path="/roles/{id}",
+ *     path="/api/roles/{id}",
  *     tags={"roles"},
  *     summary="Delete a role",
  *     @SWG\Response(

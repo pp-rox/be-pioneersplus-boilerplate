@@ -11,21 +11,19 @@
 |
  */
 
-
-
 // Controllers Within The "App\Http\Controllers\API" Namespace
 Route::namespace ('API')->group(function () {
 
     Route::post('login', 'UserController@login');
     Route::post('register', 'UserController@register');
     Route::get('testing', 'UserController@testing');
+    Route::get('get-token', 'UserController@getToken');
+    Route::get('logout', 'UserController@logout');
 
     Route::group(['middleware' => 'auth:api'], function () {
         Route::get('profile', 'UserController@profile');
-        Route::get('logout', 'UserController@logout');
-        Route::get('request-token', 'UserController@logout');
 
-        Route::group(['middleware' => ['auth:api', 'scope:admin']], function () {
+        Route::group(['middleware' => ['auth:api', 'scopes:admin']], function () {
 
             Route::resource('roles', 'Admin\RoleController');
             // Route::post('roles', 'Admin\RoleController@store');
